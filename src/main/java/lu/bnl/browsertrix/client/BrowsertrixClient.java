@@ -1,10 +1,12 @@
-package lu.bnl.browsertrix.client.api;
+package lu.bnl.browsertrix.client;
 
 import java.io.IOException;
 
+import lu.bnl.browsertrix.client.api.ConnectionSettingsProvider;
 import lu.bnl.browsertrix.client.api.request.AccessToken;
 import lu.bnl.browsertrix.client.api.services.ArchiveService;
 import lu.bnl.browsertrix.client.api.services.AuthenticationService;
+import lu.bnl.browsertrix.client.api.services.BrowserProfileService;
 import lu.bnl.browsertrix.client.api.services.CrawlService;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
 import lu.bnl.browsertrix.client.model.authentication.AuthenticationResponse;
@@ -25,6 +27,7 @@ public class BrowsertrixClient implements ConnectionSettingsProvider
 	// Handle to the different API services
 	private AuthenticationService authenticationService;
 	private ArchiveService archiveService;
+	private BrowserProfileService browserProfileService;
 	private CrawlService crawlService;
 	
 	
@@ -46,6 +49,7 @@ public class BrowsertrixClient implements ConnectionSettingsProvider
 	{
 		this.authenticationService = new AuthenticationService(this);
 		this.archiveService = new ArchiveService(this);
+		this.browserProfileService = new BrowserProfileService(this);
 		this.crawlService = new CrawlService(this);
 	}
 	
@@ -129,6 +133,10 @@ public class BrowsertrixClient implements ConnectionSettingsProvider
 	public CrawlService getCrawlService() {
 		return crawlService;
 	}
-	
+
+	public BrowserProfileService getBrowserProfileService() {
+		return browserProfileService;
+	}
+
 	
 }
