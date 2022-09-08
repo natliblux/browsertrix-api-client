@@ -29,7 +29,7 @@ public class ArchiveService extends BasicApiService
 
 	public ArchiveListResponse listArchives() throws IOException, BrowsertrixApiException
 	{
-		// Try to get self-identification information from the server
+		// Construct and execute the query
 		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
 		HttpResponse response = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT, getConnectionSettingsProvider().getAccessToken());
 	
@@ -50,7 +50,7 @@ public class ArchiveService extends BasicApiService
 	
 	public Archive getArchiveById(String archiveId) throws IOException, BrowsertrixApiException
 	{
-		// Try to get self-identification information from the server
+		// Construct and execute the query
 		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
 		HttpResponse response = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId, getConnectionSettingsProvider().getAccessToken());
 	

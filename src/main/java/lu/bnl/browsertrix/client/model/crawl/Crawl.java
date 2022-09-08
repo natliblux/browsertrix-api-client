@@ -1,5 +1,7 @@
 package lu.bnl.browsertrix.client.model.crawl;
 
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -43,6 +45,10 @@ public class Crawl
 	
 	@SerializedName("userid")
 	private String userid;
+	
+	@SerializedName("resources")
+	private List<CrawlResource> resources;
+	
 
 	public String getId() {
 		return id;
@@ -140,11 +146,39 @@ public class Crawl
 		this.userid = userid;
 	}
 
+	public List<CrawlResource> getResources() {
+		return resources;
+	}
+
+	public void setResources(List<CrawlResource> resources) {
+		this.resources = resources;
+	}
+
 	@Override
-	public String toString() {
+	public String toString() 
+	{
+		String res = "";
+		
+		if (resources != null)
+		{
+			res = "CrawlResources [";
+		
+			for (CrawlResource resource : resources)
+			{
+				res += resource.toString() + " ";
+			}
+			
+			res += "]";
+		}
+		
+		
+		
 		return "Crawl [id=" + id + ", aid=" + aid + ", cid=" + cid + ", name=" + name + ", fileCount=" + fileCount
 				+ ", fileSize=" + fileSize + ", finished=" + finished + ", started=" + started + ", manual=" + manual
-				+ ", state=" + state + ", userName=" + userName + ", userid=" + userid + "]";
+				+ ", state=" + state + ", userName=" + userName + ", userid=" + userid + ", resources=" + res
+				+ " ]";
 	}
+
+	
 	
 }

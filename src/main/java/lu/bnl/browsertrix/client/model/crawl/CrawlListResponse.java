@@ -24,10 +24,10 @@ public class CrawlListResponse
 		
 		for (Crawl crawl : crawls)
 		{
-			result += crawl.toString() + " ";
+			result += crawl.toString() + "\n ";
 		}
 		
-		result += "]";
+		result += "\n]";
 		
 		return result;
 	}
