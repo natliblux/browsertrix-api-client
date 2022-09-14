@@ -1,6 +1,6 @@
 ## Introduction
 
-`browsertrix-api-client` is a Java API client for Browsertrix Cloud. The client supports authentication and provides an easy way to access its various services and endpoints.
+`browsertrix-api-client` is a Java API client for [Browsertrix Cloud](https://github.com/webrecorder/browsertrix-cloud). The client supports authentication and provides an easy way to access its various services and endpoints.
 
 ## Usage
 

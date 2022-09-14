@@ -1,9 +1,15 @@
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import lu.bnl.browsertrix.client.BrowsertrixClient;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
 import lu.bnl.browsertrix.client.model.archive.ArchiveListResponse;
+import lu.bnl.browsertrix.client.model.crawl.Crawl;
+import lu.bnl.browsertrix.client.model.crawl.CrawlState;
 
 public class AppTest 
 {
@@ -18,7 +24,7 @@ public class AppTest
 	{
 		try
 		{
-			testCrawlService();
+			testArchiveService();
 		}
 		catch (Exception e)
 		{
