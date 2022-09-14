@@ -1,20 +1,17 @@
+package lu.bnl.browsertrix.client.test;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 import lu.bnl.browsertrix.client.BrowsertrixClient;
+import lu.bnl.browsertrix.client.api.filter.CrawlFilter;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
 import lu.bnl.browsertrix.client.model.archive.ArchiveListResponse;
-import lu.bnl.browsertrix.client.model.crawl.Crawl;
 import lu.bnl.browsertrix.client.model.crawl.CrawlState;
 
 public class AppTest 
 {
 
-	// Test connection parameters
+	// Test connection parameters.
 	private static final String URL = "localhost";
 	private static final int PORT = 9871;
 	private static final String USERNAME = "admin@example.com";
@@ -24,13 +21,29 @@ public class AppTest
 	{
 		try
 		{
-			testArchiveService();
+			testFiltering();
 		}
 		catch (Exception e)
 		{
 			System.out.println("Test FAILED: " + e.getMessage());
 			e.printStackTrace();
 		}
+	}
+	
+	private static void testFiltering() throws BrowsertrixApiException, IOException
+	{
+		BrowsertrixClient client = new BrowsertrixClient(URL, PORT, USERNAME, PASSWORD);
+		
+		client.connect();
+		
+		ArchiveListResponse response = client.getArchiveService().listArchives();
+		String id = response.getArchives().get(0).getId();
+
+		CrawlFilter filter = new CrawlFilter();
+		filter.setCrawlState(CrawlState.COMPLETE);
+		filter.setFinishedAfter(Instant.now().getEpochSecond() - 24*60*60*30); // i.e., 30 days ago, in seconds
+		
+		System.out.println(client.getCrawlService().listCrawlsByArchiveId(id, filter));
 	}
 	
 	private static void testAuthenticationService() throws BrowsertrixApiException, IOException
@@ -56,8 +69,6 @@ public class AppTest
 		System.out.println(client.getArchiveService().getArchiveById(id));
 		
 		System.out.println(client.getCrawlService().listCrawlsByArchiveId(id));
-
-		
 	}
 	
 	private static void testBrowserProfileService() throws BrowsertrixApiException, IOException

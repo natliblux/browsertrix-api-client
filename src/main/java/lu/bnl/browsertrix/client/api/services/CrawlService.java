@@ -2,6 +2,7 @@ package lu.bnl.browsertrix.client.api.services;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -11,6 +12,7 @@ import com.google.gson.Gson;
 
 import lu.bnl.browsertrix.client.api.ConnectionSettingsProvider;
 import lu.bnl.browsertrix.client.api.constants.BrowsertrixEndpoints;
+import lu.bnl.browsertrix.client.api.filter.CrawlFilter;
 import lu.bnl.browsertrix.client.api.utils.HttpUtils;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
 import lu.bnl.browsertrix.client.model.crawl.Crawl;
@@ -29,6 +31,31 @@ public class CrawlService extends BasicApiService
 		super(connectionSettingsProvider);
 	}
 
+	/**
+	 * Returns a list of crawls within the archive of the given ID, filtered using the given parameters.
+	 * 
+	 * Note: the Browsertrix API does not do filtering at this time. The filtering is thus done client-side. 
+	 * 
+	 */
+	public CrawlListResponse listCrawlsByArchiveId(String archiveId, CrawlFilter filter) throws IOException, BrowsertrixApiException
+	{
+		CrawlListResponse unfilteredResponse = listCrawlsByArchiveId(archiveId);
+		
+		// Client-side filtering...
+		if (filter != null)
+		{
+			CrawlListResponse filteredResponse = new CrawlListResponse();
+			List<Crawl> filteredList = filter.applyTo(unfilteredResponse.getCrawls());
+			filteredResponse.setCrawls(filteredList);
+			return filteredResponse;
+		}
+		
+		return unfilteredResponse;
+	}
+	
+	/**
+	 * Returns a list of crawls within the archive of the given ID.
+	 */
 	public CrawlListResponse listCrawlsByArchiveId(String archiveId) throws IOException, BrowsertrixApiException
 	{
 		// Construct and execute the query

@@ -52,7 +52,7 @@ Once the connection to the server has been established and the user logged in us
 ## List of API services
 
 Currently `browsertrix-api-client` supports the following services:
- * `AuthenticationService` : for everything related to authentication, login, and user self identification
+ * `AuthenticationService` : for everything related to authentication, login, and user self identification,
  * `ArchiveService` : requests related to archives (collections of crawls),
  * `BrowserProfileService` : special browser configurations used within the context of crawl configs,
  * `CrawlService` : everything about crawls and crawl configs.

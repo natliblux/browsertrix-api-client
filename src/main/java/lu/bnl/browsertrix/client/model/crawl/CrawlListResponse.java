@@ -24,7 +24,7 @@ public class CrawlListResponse
 		
 		for (Crawl crawl : crawls)
 		{
-			result += crawl.toString() + "\n ";
+			result += "\n " + crawl.toString();
 		}
 		
 		result += "\n]";
