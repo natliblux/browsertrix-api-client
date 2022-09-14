@@ -11,7 +11,7 @@ BrowsertrixClient client = new BrowsertrixClient(URL, PORT, USERNAME, PASSWORD);
 client.connect();
 ```
 
-In order to use the various features of the Browsertrix API, the client exposes a number of services. For instance, to get a list of archives, simply issue:
+In order to use the various features of the Browsertrix API, the client exposes a number of services. For instance, to get a list of archives, simply call:
 
 ```java
 ArchiveListResponse response = client.getArchiveService().listArchives();
@@ -48,6 +48,19 @@ lastCrawlTime=2022-08-16T06:43:43, ...
 
 ### Authentication
 Once the connection to the server has been established and the user logged in using the given credentials, `browsertrix-api-client` will take care of authenticating each request in a transparent manner (using the authentication token received from the server). If an API session is timed out, the client will automatically re-establish the connection so you can keep on using the same `BrowsertrixClient` as long as you like.
+
+### Filtering
+While the Browsertrix Cloud API does not support filtered requests for the moment, `browsertrix-api-client` is able to filter lists returned by the API on the client side. An example is shown below.
+
+```java
+CrawlFilter filter = new CrawlFilter();
+filter.setCrawlState(CrawlState.COMPLETE);
+filter.setFinishedAfter(Instant.now().getEpochSecond() - 24*60*60*30); // i.e., 30 days ago, in seconds
+System.out.println(client.getCrawlService().listCrawlsByArchiveId(id, filter));
+```
+
+
+
 
 ## List of API services
 
