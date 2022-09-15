@@ -50,7 +50,7 @@ lastCrawlTime=2022-08-16T06:43:43, ...
 Once the connection to the server has been established and the user logged in using the given credentials, `browsertrix-api-client` will take care of authenticating each request in a transparent manner (using the authentication token received from the server). If an API session is timed out, the client will automatically re-establish the connection so you can keep on using the same `BrowsertrixClient` as long as you like.
 
 ### Filtering
-While the Browsertrix Cloud API does not support filtered requests for the moment, `browsertrix-api-client` is able to filter lists returned by the API on the client side. An example is shown below.
+While the Browsertrix Cloud API does not support filtered requests for the moment, `browsertrix-api-client` is able to filter lists returned by the API on the client side. An example is shown below, for filtering all crawls within a given collection that are completed successfully since 30 days ago:
 
 ```java
 CrawlFilter filter = new CrawlFilter();
