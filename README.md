@@ -61,7 +61,6 @@ System.out.println(client.getCrawlService().listCrawlsByArchiveId(id, filter));
 
 
 
-
 ## List of API services
 
 Currently `browsertrix-api-client` supports the following services:
