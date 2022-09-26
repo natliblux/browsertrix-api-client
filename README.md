@@ -71,6 +71,6 @@ Currently `browsertrix-api-client` supports the following services:
  
 ## Examples
 
-You can find examples for every supported API call in the `src/test/java/AppTest.java` class.
+You can find examples for every supported API call in the `src/test/java/AppTest.java` class. 
 
  

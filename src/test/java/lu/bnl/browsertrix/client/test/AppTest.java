@@ -17,7 +17,7 @@ public class AppTest
 	private static final String USERNAME = "admin@example.com";
 	private static final String PASSWORD = "PASSW0RD0";
 	
-	public static void main(String[] args) 
+	public static void main(String[] args)
 	{
 		try
 		{
