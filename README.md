@@ -56,7 +56,7 @@ While the Browsertrix Cloud API does not support filtered requests for the momen
 CrawlFilter filter = new CrawlFilter();
 filter.setCrawlState(CrawlState.COMPLETE);
 filter.setFinishedAfter(Instant.now().getEpochSecond() - 24*60*60*30); // i.e., 30 days ago, in seconds
-System.out.println(client.getCrawlService().listCrawlsByArchiveId(id, filter));
+System.out.println(client.getCrawlService().listCrawlsByArchiveId(id, filter)); 
 ```
 
 
