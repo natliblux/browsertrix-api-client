@@ -15,10 +15,10 @@ import com.google.gson.Gson;
 
 import lu.bnl.browsertrix.client.api.ConnectionSettingsProvider;
 import lu.bnl.browsertrix.client.api.constants.BrowsertrixEndpoints;
-import lu.bnl.browsertrix.client.api.utils.HttpUtils;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
 import lu.bnl.browsertrix.client.model.authentication.AuthenticationResponse;
 import lu.bnl.browsertrix.client.model.authentication.UserInformationResponse;
+import lu.bnl.browsertrix.client.utils.HttpUtils;
 
 /**
  * Contains methods related to user authentication/login.

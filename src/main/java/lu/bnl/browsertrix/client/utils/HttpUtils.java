@@ -1,4 +1,4 @@
-package lu.bnl.browsertrix.client.api.utils;
+package lu.bnl.browsertrix.client.utils;
 
 import java.io.IOException;
 import java.util.List;

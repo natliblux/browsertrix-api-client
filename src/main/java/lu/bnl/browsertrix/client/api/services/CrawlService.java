@@ -13,12 +13,12 @@ import com.google.gson.Gson;
 import lu.bnl.browsertrix.client.api.ConnectionSettingsProvider;
 import lu.bnl.browsertrix.client.api.constants.BrowsertrixEndpoints;
 import lu.bnl.browsertrix.client.api.filter.CrawlFilter;
-import lu.bnl.browsertrix.client.api.utils.HttpUtils;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
 import lu.bnl.browsertrix.client.model.crawl.Crawl;
 import lu.bnl.browsertrix.client.model.crawl.CrawlConfig;
 import lu.bnl.browsertrix.client.model.crawl.CrawlConfigListResponse;
 import lu.bnl.browsertrix.client.model.crawl.CrawlListResponse;
+import lu.bnl.browsertrix.client.utils.HttpUtils;
 
 /**
  * Contains methods related to crawls and crawl configs.

@@ -11,10 +11,10 @@ import com.google.gson.Gson;
 
 import lu.bnl.browsertrix.client.api.ConnectionSettingsProvider;
 import lu.bnl.browsertrix.client.api.constants.BrowsertrixEndpoints;
-import lu.bnl.browsertrix.client.api.utils.HttpUtils;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
 import lu.bnl.browsertrix.client.model.browser.BrowserProfile;
 import lu.bnl.browsertrix.client.model.browser.BrowserProfileListResponse;
+import lu.bnl.browsertrix.client.utils.HttpUtils;
 
 /**
  * Contains methods related browser profiles that are used within the context of crawl configurations.
