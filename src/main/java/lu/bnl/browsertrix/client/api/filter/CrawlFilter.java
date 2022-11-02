@@ -10,23 +10,22 @@ import lu.bnl.browsertrix.client.utils.TimeUtils;
 /**
  * A basic filter used within the context of listing crawls using the CrawlService.
  * 
- * TODO incomplete
- *
  */
 public class CrawlFilter implements Filter<Crawl>
 {
 	// The state of the crawl
-	private CrawlState crawlState;
+	private List<CrawlState> crawlStates;
 	
 	// This is relative to the amount of seconds since Epoch
 	private Long finishedAfter;
+
 	
-	public CrawlState getCrawlState() {
-		return crawlState;
+	public List<CrawlState> getCrawlStates() {
+		return crawlStates;
 	}
 
-	public void setCrawlState(CrawlState crawlState) {
-		this.crawlState = crawlState;
+	public void setCrawlStates(List<CrawlState> crawlStates) {
+		this.crawlStates = crawlStates;
 	}
 
 	public Long getFinishedAfter() {
@@ -46,15 +45,6 @@ public class CrawlFilter implements Filter<Crawl>
 		{
 			try
 			{
-				// Status filtering
-				if (this.crawlState != null && !crawlState.getStringValue().trim().isEmpty())
-				{		
-					if (!this.crawlState.getStringValue().equals(crawl.getState()))
-					{
-						continue;
-					}
-				}
-				
 				// Finished time filtering
 				if (this.finishedAfter != null && this.finishedAfter > 0L)
 				{		
@@ -66,8 +56,17 @@ public class CrawlFilter implements Filter<Crawl>
 					}
 				}
 				
-				// All tests passed, add the item to the result list.
-				result.add(crawl);
+				// Status filtering
+				for (CrawlState state : crawlStates)
+				{
+					if (state.getStringValue().equals(crawl.getState()))
+					{
+						// Add it
+						result.add(crawl);
+						break;
+					}
+				}
+				
 			}
 			catch (Exception e)
 			{

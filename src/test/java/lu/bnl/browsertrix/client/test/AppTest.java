@@ -1,6 +1,8 @@
 package lu.bnl.browsertrix.client.test;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import lu.bnl.browsertrix.client.BrowsertrixClient;
 import lu.bnl.browsertrix.client.api.filter.CrawlFilter;
@@ -40,7 +42,12 @@ public class AppTest
 		String id = response.getArchives().get(0).getId();
 
 		CrawlFilter filter = new CrawlFilter();
-		filter.setCrawlState(CrawlState.COMPLETE);
+		
+		List<CrawlState> states = new ArrayList<CrawlState>();
+		states.add(CrawlState.PARTIAL_COMPLETE);
+		states.add(CrawlState.FAILED);
+		
+		filter.setCrawlStates(states);
 		filter.setFinishedAfter(Instant.now().getEpochSecond() - 24*60*60*30); // i.e., 30 days ago, in seconds
 		
 		System.out.println(client.getCrawlService().listCrawlsByArchiveId(id, filter));
