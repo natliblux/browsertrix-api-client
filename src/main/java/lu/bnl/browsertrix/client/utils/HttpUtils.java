@@ -37,7 +37,7 @@ public class HttpUtils
 		return client.execute(get);
 	}
 	
-	public static HttpResponse executeUnauthenticatedPostRequest(String fullUrl, List<NameValuePair> payload) throws IOException
+	public static HttpResponse executePostRequest(String fullUrl, List<NameValuePair> payload, AccessToken accessToken) throws IOException
 	{
 		// Construct the request
 		CloseableHttpClient client = HttpClients.custom().build();
@@ -47,11 +47,25 @@ public class HttpUtils
 		Header headers[] = { new BasicHeader("Accept", "application/json") };
 		post.setHeaders(headers);
 		
+		if (accessToken != null)
+		{
+			Header header = new BasicHeader("Authorization", getAuthHeaderFromAccessToken(accessToken));
+			post.addHeader(header);
+		}
+		
 		// Create the payload
-		post.setEntity(new UrlEncodedFormEntity(payload, "UTF-8"));
+		if (payload != null && !payload.isEmpty())
+		{
+			post.setEntity(new UrlEncodedFormEntity(payload, "UTF-8"));
+		}
 		
 		// Do it!
 		return client.execute(post);
+	}
+
+	public static HttpResponse executePostRequest(String fullUrl, List<NameValuePair> payload) throws IOException
+	{
+		return executePostRequest(fullUrl, payload, null);
 	}
 	
 	/**

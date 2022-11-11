@@ -18,6 +18,7 @@ import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
 import lu.bnl.browsertrix.client.model.crawl.Crawl;
 import lu.bnl.browsertrix.client.model.crawl.CrawlConfig;
 import lu.bnl.browsertrix.client.model.crawl.CrawlConfigListResponse;
+import lu.bnl.browsertrix.client.model.crawl.CrawlConfigRunResponse;
 import lu.bnl.browsertrix.client.model.crawl.CrawlListResponse;
 import lu.bnl.browsertrix.client.utils.HttpUtils;
 
@@ -163,6 +164,34 @@ public class CrawlService extends BasicApiService
 		// We're done!
 		return entity;
 	}
+	
+	/**
+	 * Runs a crawl based on the given crawl config (template) ID, in the given archive.
+	 * 
+	 * Returns the ID of the crawl that has just started.
+	 * 
+	 */
+	public String runCrawl(String archiveId, String crawlConfigId) throws IOException, BrowsertrixApiException
+	{
+		// Construct and execute the query
+		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
+		HttpResponse response = HttpUtils.executePostRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.CRAWL_CONFIGS_ENDPOINT + "/" + crawlConfigId + BrowsertrixEndpoints.RUN_CRAWL_ENDPOINT, null, getConnectionSettingsProvider().getAccessToken());
+	
+		int status = response.getStatusLine().getStatusCode();
+		if (status != HttpStatus.SC_OK)
+		{
+			throw new BrowsertrixApiException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+		}
+		
+		// Deserialize the response
+		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+		Gson gson = new Gson();
+		CrawlConfigRunResponse entity = gson.fromJson(result, CrawlConfigRunResponse.class);
+		
+		// We're done!
+		return entity.getCrawlId();
+	}
+	
 	
 	
 }

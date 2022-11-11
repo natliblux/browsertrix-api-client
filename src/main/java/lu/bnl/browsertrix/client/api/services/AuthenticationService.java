@@ -58,7 +58,7 @@ public class AuthenticationService extends BasicApiService
 		
 		// Execute the request
 		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
-		HttpResponse response = HttpUtils.executeUnauthenticatedPostRequest(urlPrefix + BrowsertrixEndpoints.AUTH_ENDPOINT, payload);
+		HttpResponse response = HttpUtils.executePostRequest(urlPrefix + BrowsertrixEndpoints.AUTH_ENDPOINT, payload);
 
 		// Check status
 		int status = response.getStatusLine().getStatusCode();

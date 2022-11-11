@@ -14,6 +14,7 @@ public class BrowsertrixEndpoints
 	public static final String CRAWLS_ENDPOINT = "/crawls";
 	public static final String CRAWL_CONFIGS_ENDPOINT = "/crawlconfigs";
 	public static final String BROWSER_PROFILE_ENDPOINT = "/profiles";
+	public static final String RUN_CRAWL_ENDPOINT = "/run";
 	
 	
 	

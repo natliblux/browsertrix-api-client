@@ -9,6 +9,7 @@ import lu.bnl.browsertrix.client.api.filter.CrawlConfigFilter;
 import lu.bnl.browsertrix.client.api.filter.CrawlFilter;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
 import lu.bnl.browsertrix.client.model.archive.ArchiveListResponse;
+import lu.bnl.browsertrix.client.model.crawl.CrawlConfig;
 import lu.bnl.browsertrix.client.model.crawl.CrawlState;
 
 public class AppTest 
@@ -24,7 +25,7 @@ public class AppTest
 	{
 		try
 		{
-			testFilteredCrawlTemplates();
+			testRunCrawl();
 		}
 		catch (Exception e)
 		{
@@ -132,7 +133,24 @@ public class AppTest
 		filter.setOnlyScheduled(true);
 		
 		System.out.println(client.getCrawlService().listCrawlConfigsByArchiveId(id, filter));
+	}
 	
+	private static void testRunCrawl() throws BrowsertrixApiException, IOException
+	{
+		BrowsertrixClient client = new BrowsertrixClient(URL, PORT, USERNAME, PASSWORD);
+		client.connect();
+		
+		// Attempts to get the first crawl template with a schedule. If one exists, triggers a crawl from that.
+		ArchiveListResponse response = client.getArchiveService().listArchives();
+		String archiveId = response.getArchives().get(0).getId();
+		CrawlConfigFilter filter = new CrawlConfigFilter();
+		filter.setOnlyScheduled(true);		
+		List<CrawlConfig> crawlConfigs = client.getCrawlService().listCrawlConfigsByArchiveId(archiveId, filter).getCrawlConfigs();
+		
+		// Now we try to run the crawl from this crawl config
+		String crawlId = client.getCrawlService().runCrawl(archiveId, crawlConfigs.get(0).getId());
+		
+		System.out.println("Successfully started crawl with ID '" + crawlId + "'");
 	}
 	
 }
