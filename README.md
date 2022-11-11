@@ -59,6 +59,10 @@ filter.setFinishedAfter(Instant.now().getEpochSecond() - 24*60*60*30); // i.e., 
 System.out.println(client.getCrawlService().listCrawlsByArchiveId(id, filter)); 
 ```
 
+Two types of filters exist:
+  * `CrawlFilter`: filters crawls,
+  * `CrawlConfigFilter`: filters crawl configurations (templates).
+
 
 ## List of API services
 
