@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lu.bnl.browsertrix.client.BrowsertrixClient;
+import lu.bnl.browsertrix.client.api.filter.CrawlConfigFilter;
 import lu.bnl.browsertrix.client.api.filter.CrawlFilter;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
 import lu.bnl.browsertrix.client.model.archive.ArchiveListResponse;
@@ -23,7 +24,7 @@ public class AppTest
 	{
 		try
 		{
-			testFiltering();
+			testFilteredCrawlTemplates();
 		}
 		catch (Exception e)
 		{
@@ -45,10 +46,10 @@ public class AppTest
 		
 		List<CrawlState> states = new ArrayList<CrawlState>();
 		states.add(CrawlState.PARTIAL_COMPLETE);
-		states.add(CrawlState.FAILED);
+		states.add(CrawlState.COMPLETE);
 		
 		filter.setCrawlStates(states);
-		filter.setFinishedAfter(Instant.now().getEpochSecond() - 24*60*60*30); // i.e., 30 days ago, in seconds
+		filter.setFinishedAfter(Instant.now().getEpochSecond() - 240*60*60); // in seconds
 		
 		System.out.println(client.getCrawlService().listCrawlsByArchiveId(id, filter));
 	}
@@ -106,4 +107,32 @@ public class AppTest
 		System.out.println(client.getCrawlService().getCrawlConfigById("b5fef53a-fbf2-40ed-8b5f-3e27e1608ef7", "e7849083-cb84-495c-a4dc-e8489cf8fe96"));
 	}
 
+	private static void testCrawlTemplates() throws BrowsertrixApiException, IOException
+	{
+		BrowsertrixClient client = new BrowsertrixClient(URL, PORT, USERNAME, PASSWORD);
+		
+		client.connect();
+		
+		ArchiveListResponse response = client.getArchiveService().listArchives();
+		String id = response.getArchives().get(0).getId();
+		System.out.println(client.getCrawlService().listCrawlConfigsByArchiveId(id));
+	
+	}
+	
+	private static void testFilteredCrawlTemplates() throws BrowsertrixApiException, IOException
+	{
+		BrowsertrixClient client = new BrowsertrixClient(URL, PORT, USERNAME, PASSWORD);
+		
+		client.connect();
+		
+		ArchiveListResponse response = client.getArchiveService().listArchives();
+		String id = response.getArchives().get(0).getId();
+		
+		CrawlConfigFilter filter = new CrawlConfigFilter();
+		filter.setOnlyScheduled(true);
+		
+		System.out.println(client.getCrawlService().listCrawlConfigsByArchiveId(id, filter));
+	
+	}
+	
 }

@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 
 import lu.bnl.browsertrix.client.api.ConnectionSettingsProvider;
 import lu.bnl.browsertrix.client.api.constants.BrowsertrixEndpoints;
+import lu.bnl.browsertrix.client.api.filter.CrawlConfigFilter;
 import lu.bnl.browsertrix.client.api.filter.CrawlFilter;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
 import lu.bnl.browsertrix.client.model.crawl.Crawl;
@@ -102,6 +103,21 @@ public class CrawlService extends BasicApiService
 		return entity;
 	}
 	
+	public CrawlConfigListResponse listCrawlConfigsByArchiveId(String archiveId, CrawlConfigFilter filter) throws IOException, BrowsertrixApiException
+	{
+		CrawlConfigListResponse unfilteredResponse = listCrawlConfigsByArchiveId(archiveId);
+		
+		// Client-side filtering...
+		if (filter != null)
+		{
+			CrawlConfigListResponse filteredResponse = new CrawlConfigListResponse();
+			List<CrawlConfig> filteredList = filter.applyTo(unfilteredResponse.getCrawlConfigs());
+			filteredResponse.setCrawlConfigs(filteredList);
+			return filteredResponse;
+		}
+		
+		return unfilteredResponse;
+	}
 	
 	public CrawlConfigListResponse listCrawlConfigsByArchiveId(String archiveId) throws IOException, BrowsertrixApiException
 	{
