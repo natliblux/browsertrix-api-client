@@ -46,6 +46,19 @@ lastCrawlTime=2022-08-16T06:43:43, ...
 ]
 ```
 
+### Triggering a crawl
+
+Starting from version `0.0.4`, the client is able to run crawls directly via API. The syntax is straightforward:
+
+````java
+String crawlId = client.getCrawlService().runCrawl(archiveId, crawlConfigId);
+System.out.println("Successfully started crawl with ID '" + crawlId + "'");
+````
+
+The above command will run a crawl based on the given crawl configuration, inside the given archive.
+
+
+
 ### Authentication
 Once the connection to the server has been established and the user logged in using the given credentials, `browsertrix-api-client` will take care of authenticating each request in a transparent manner (using the authentication token received from the server). If an API session is timed out, the client will automatically re-establish the connection so you can keep on using the same `BrowsertrixClient` as long as you like.
 

@@ -25,7 +25,7 @@ public class AppTest
 	{
 		try
 		{
-			testRunCrawl();
+			testFilteredCrawlTemplates();
 		}
 		catch (Exception e)
 		{
@@ -144,7 +144,7 @@ public class AppTest
 		ArchiveListResponse response = client.getArchiveService().listArchives();
 		String archiveId = response.getArchives().get(0).getId();
 		CrawlConfigFilter filter = new CrawlConfigFilter();
-		filter.setOnlyScheduled(true);		
+		filter.setOnlyScheduled(true);
 		List<CrawlConfig> crawlConfigs = client.getCrawlService().listCrawlConfigsByArchiveId(archiveId, filter).getCrawlConfigs();
 		
 		// Now we try to run the crawl from this crawl config
