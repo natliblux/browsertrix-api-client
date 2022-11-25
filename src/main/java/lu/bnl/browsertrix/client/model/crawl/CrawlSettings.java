@@ -2,6 +2,7 @@ package lu.bnl.browsertrix.client.model.crawl;
 
 import java.util.List;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -14,42 +15,53 @@ public class CrawlSettings
 	private String behaviorTimeout;
 	
 	@SerializedName("behaviors")
+	@Expose
 	private String behaviors;
 	
 	@SerializedName("combineWARC")
+	@Expose
 	private Boolean combineWarc;
 	
 	@SerializedName("depth")
+	@Expose
 	private Integer depth;
 	
 	@SerializedName("exclude")
-	private String exclude;
+	private List<String> exclude;
 	
 	@SerializedName("include")
-	private String include;
+	private List<String> include;
 	
 	@SerializedName("extraHops")
+	@Expose
 	private Integer extraHops;
 	
 	@SerializedName("generateWacz")
+	@Expose
 	private Boolean generateWacz;
 	
 	@SerializedName("headless")
+	@Expose
 	private Boolean headless;
 	
 	@SerializedName("limit")
+	@Expose
 	private Integer limit;
-	
+
+	@Expose
 	@SerializedName("logging")
 	private String logging;
 	
 	@SerializedName("scopeType")
+	@Expose
 	private String scopeType;
 	
 	@SerializedName("workers")
+	@Expose
 	private Integer workers;
 	
 	@SerializedName("seeds")
+	@Expose
 	private List<String> seeds;
 
 	public String getBehaviorTimeout() {
@@ -84,19 +96,19 @@ public class CrawlSettings
 		this.depth = depth;
 	}
 
-	public String getExclude() {
+	public List<String> getExclude() {
 		return exclude;
 	}
 
-	public void setExclude(String exclude) {
+	public void setExclude(List<String> exclude) {
 		this.exclude = exclude;
 	}
 
-	public String getInclude() {
+	public List<String> getInclude() {
 		return include;
 	}
 
-	public void setInclude(String include) {
+	public void setInclude(List<String> include) {
 		this.include = include;
 	}
 

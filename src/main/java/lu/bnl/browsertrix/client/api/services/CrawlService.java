@@ -8,7 +8,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import lu.bnl.browsertrix.client.api.ConnectionSettingsProvider;
 import lu.bnl.browsertrix.client.api.constants.BrowsertrixEndpoints;
@@ -134,7 +137,7 @@ public class CrawlService extends BasicApiService
 		
 		// Deserialize the response
 		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		Gson gson = new Gson();
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		CrawlConfigListResponse entity = gson.fromJson(result, CrawlConfigListResponse.class);
 		
 		// We're done!
