@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>browsertrix-api-client</groupId>
   <artifactId>browsertrix-api-client</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <name>browsertrix-api-client</name>
   <description>An API client that communicates with Browsertrix Cloud</description>
   
