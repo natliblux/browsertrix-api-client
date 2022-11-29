@@ -34,7 +34,12 @@ public class HttpUtils
 		get.setHeaders(headers);
 		
 		// Do it!
-		return client.execute(get);
+		HttpResponse response = client.execute(get);
+		
+		// Close the stream gracefully
+		client.close();
+		
+		return response;
 	}
 	
 	public static HttpResponse executePostRequest(String fullUrl, List<NameValuePair> payload, AccessToken accessToken) throws IOException
@@ -60,7 +65,12 @@ public class HttpUtils
 		}
 		
 		// Do it!
-		return client.execute(post);
+		HttpResponse response = client.execute(post);
+		
+		// Close the stream gracefully
+		client.close();
+		
+		return response;
 	}
 
 	public static HttpResponse executePostRequest(String fullUrl, List<NameValuePair> payload) throws IOException
