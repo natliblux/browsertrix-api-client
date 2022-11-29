@@ -18,6 +18,7 @@ import lu.bnl.browsertrix.client.api.constants.BrowsertrixEndpoints;
 import lu.bnl.browsertrix.client.api.filter.CrawlConfigFilter;
 import lu.bnl.browsertrix.client.api.filter.CrawlFilter;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
+import lu.bnl.browsertrix.client.exceptions.HttpRequestFailedException;
 import lu.bnl.browsertrix.client.model.crawl.Crawl;
 import lu.bnl.browsertrix.client.model.crawl.CrawlConfig;
 import lu.bnl.browsertrix.client.model.crawl.CrawlConfigListResponse;
@@ -63,23 +64,23 @@ public class CrawlService extends BasicApiService
 	 */
 	public CrawlListResponse listCrawlsByArchiveId(String archiveId) throws IOException, BrowsertrixApiException
 	{
-		// Construct and execute the query
-		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
-		HttpResponse response = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.CRAWLS_ENDPOINT, getConnectionSettingsProvider().getAccessToken());
-	
-		int status = response.getStatusLine().getStatusCode();
-		if (status != HttpStatus.SC_OK)
+		try
 		{
-			throw new BrowsertrixApiException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			// Construct and execute the query
+			String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
+			String result = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.CRAWLS_ENDPOINT, getConnectionSettingsProvider().getAccessToken());
+		
+			// Deserialize the response
+			Gson gson = new Gson();
+			CrawlListResponse entity = gson.fromJson(result, CrawlListResponse.class);
+			
+			// We're done!
+			return entity;
 		}
-		
-		// Deserialize the response
-		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		Gson gson = new Gson();
-		CrawlListResponse entity = gson.fromJson(result, CrawlListResponse.class);
-		
-		// We're done!
-		return entity;
+		catch (IOException | HttpRequestFailedException e)
+		{
+			throw new BrowsertrixApiException("Could not list crawls: " + e.getMessage());
+		}
 	}
 	
 	/**
@@ -88,23 +89,23 @@ public class CrawlService extends BasicApiService
 	 */
 	public Crawl getCrawlById(String archiveId, String crawlId) throws IOException, BrowsertrixApiException
 	{
-		// Construct and execute the query
-		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
-		HttpResponse response = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.CRAWLS_ENDPOINT + "/" + crawlId + ".json", getConnectionSettingsProvider().getAccessToken());
-	
-		int status = response.getStatusLine().getStatusCode();
-		if (status != HttpStatus.SC_OK)
+		try
 		{
-			throw new BrowsertrixApiException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			// Construct and execute the query
+			String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
+			String result = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.CRAWLS_ENDPOINT + "/" + crawlId + ".json", getConnectionSettingsProvider().getAccessToken());
+			
+			// Deserialize the response
+			Gson gson = new Gson();
+			Crawl entity = gson.fromJson(result, Crawl.class);
+			
+			// We're done!
+			return entity;
 		}
-		
-		// Deserialize the response
-		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		Gson gson = new Gson();
-		Crawl entity = gson.fromJson(result, Crawl.class);
-		
-		// We're done!
-		return entity;
+		catch (IOException | HttpRequestFailedException e)
+		{
+			throw new BrowsertrixApiException("Could not get crawl: " + e.getMessage());
+		}
 	}
 	
 	public CrawlConfigListResponse listCrawlConfigsByArchiveId(String archiveId, CrawlConfigFilter filter) throws IOException, BrowsertrixApiException
@@ -125,23 +126,23 @@ public class CrawlService extends BasicApiService
 	
 	public CrawlConfigListResponse listCrawlConfigsByArchiveId(String archiveId) throws IOException, BrowsertrixApiException
 	{
-		// Construct and execute the query
-		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
-		HttpResponse response = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.CRAWL_CONFIGS_ENDPOINT, getConnectionSettingsProvider().getAccessToken());
-	
-		int status = response.getStatusLine().getStatusCode();
-		if (status != HttpStatus.SC_OK)
+		try
 		{
-			throw new BrowsertrixApiException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			// Construct and execute the query
+			String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
+			String result = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.CRAWL_CONFIGS_ENDPOINT, getConnectionSettingsProvider().getAccessToken());
+			
+			// Deserialize the response
+			Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+			CrawlConfigListResponse entity = gson.fromJson(result, CrawlConfigListResponse.class);
+			
+			// We're done!
+			return entity;
 		}
-		
-		// Deserialize the response
-		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		CrawlConfigListResponse entity = gson.fromJson(result, CrawlConfigListResponse.class);
-		
-		// We're done!
-		return entity;
+		catch (IOException | HttpRequestFailedException e)
+		{
+			throw new BrowsertrixApiException("Could not list crawl configs: " + e.getMessage());
+		}
 	}
 	
 	/**
@@ -149,23 +150,23 @@ public class CrawlService extends BasicApiService
 	 */
 	public CrawlConfig getCrawlConfigById(String archiveId, String crawlConfigId) throws IOException, BrowsertrixApiException
 	{
-		// Construct and execute the query
-		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
-		HttpResponse response = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.CRAWL_CONFIGS_ENDPOINT + "/" + crawlConfigId, getConnectionSettingsProvider().getAccessToken());
-	
-		int status = response.getStatusLine().getStatusCode();
-		if (status != HttpStatus.SC_OK)
+		try
 		{
-			throw new BrowsertrixApiException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			// Construct and execute the query
+			String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
+			String result = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.CRAWL_CONFIGS_ENDPOINT + "/" + crawlConfigId, getConnectionSettingsProvider().getAccessToken());
+
+			// Deserialize the response
+			Gson gson = new Gson();
+			CrawlConfig entity = gson.fromJson(result, CrawlConfig.class);
+			
+			// We're done!
+			return entity;
 		}
-		
-		// Deserialize the response
-		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		Gson gson = new Gson();
-		CrawlConfig entity = gson.fromJson(result, CrawlConfig.class);
-		
-		// We're done!
-		return entity;
+		catch (IOException | HttpRequestFailedException e)
+		{
+			throw new BrowsertrixApiException("Could not get crawl config: " + e.getMessage());
+		}
 	}
 	
 	/**
@@ -176,23 +177,23 @@ public class CrawlService extends BasicApiService
 	 */
 	public String runCrawl(String archiveId, String crawlConfigId) throws IOException, BrowsertrixApiException
 	{
-		// Construct and execute the query
-		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
-		HttpResponse response = HttpUtils.executePostRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.CRAWL_CONFIGS_ENDPOINT + "/" + crawlConfigId + BrowsertrixEndpoints.RUN_CRAWL_ENDPOINT, null, getConnectionSettingsProvider().getAccessToken());
-	
-		int status = response.getStatusLine().getStatusCode();
-		if (status != HttpStatus.SC_OK)
+		try
 		{
-			throw new BrowsertrixApiException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			// Construct and execute the query
+			String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
+			String result = HttpUtils.executePostRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.CRAWL_CONFIGS_ENDPOINT + "/" + crawlConfigId + BrowsertrixEndpoints.RUN_CRAWL_ENDPOINT, null, getConnectionSettingsProvider().getAccessToken());
+			
+			// Deserialize the response
+			Gson gson = new Gson();
+			CrawlConfigRunResponse entity = gson.fromJson(result, CrawlConfigRunResponse.class);
+			
+			// We're done!
+			return entity.getCrawlId();
 		}
-		
-		// Deserialize the response
-		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		Gson gson = new Gson();
-		CrawlConfigRunResponse entity = gson.fromJson(result, CrawlConfigRunResponse.class);
-		
-		// We're done!
-		return entity.getCrawlId();
+		catch (IOException | HttpRequestFailedException e)
+		{
+			throw new BrowsertrixApiException("Could not run crawl: " + e.getMessage());
+		}
 	}
 	
 	

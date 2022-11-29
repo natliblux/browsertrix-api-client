@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import lu.bnl.browsertrix.client.api.ConnectionSettingsProvider;
 import lu.bnl.browsertrix.client.api.constants.BrowsertrixEndpoints;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
+import lu.bnl.browsertrix.client.exceptions.HttpRequestFailedException;
 import lu.bnl.browsertrix.client.model.browser.BrowserProfile;
 import lu.bnl.browsertrix.client.model.browser.BrowserProfileListResponse;
 import lu.bnl.browsertrix.client.utils.HttpUtils;
@@ -29,44 +30,44 @@ public class BrowserProfileService extends BasicApiService
 
 	public BrowserProfileListResponse listBrowserProfilesByArchiveId(String archiveId) throws IOException, BrowsertrixApiException
 	{
-		// Construct and execute the query 
-		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
-		HttpResponse response = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.BROWSER_PROFILE_ENDPOINT, getConnectionSettingsProvider().getAccessToken());
-	
-		int status = response.getStatusLine().getStatusCode();
-		if (status != HttpStatus.SC_OK)
+		try
 		{
-			throw new BrowsertrixApiException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			// Construct and execute the query 
+			String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
+			String result = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.BROWSER_PROFILE_ENDPOINT, getConnectionSettingsProvider().getAccessToken());
+			
+			// Deserialize the response
+			Gson gson = new Gson();
+			BrowserProfile[] entity = gson.fromJson(result, BrowserProfile[].class);
+			
+			// We're done!
+			return new BrowserProfileListResponse(entity);
 		}
-		
-		// Deserialize the response
-		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		Gson gson = new Gson();
-		BrowserProfile[] entity = gson.fromJson(result, BrowserProfile[].class);
-		
-		// We're done!
-		return new BrowserProfileListResponse(entity);
+		catch (IOException | HttpRequestFailedException e)
+		{
+			throw new BrowsertrixApiException("Could not list profiles: " + e.getMessage());
+		}
 	}
 	
 	public BrowserProfile getBrowserProfileById(String archiveId, String profileId) throws IOException, BrowsertrixApiException
 	{
-		// Construct and execute the query 
-		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
-		HttpResponse response = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.BROWSER_PROFILE_ENDPOINT + "/" + profileId, getConnectionSettingsProvider().getAccessToken());
-	
-		int status = response.getStatusLine().getStatusCode();
-		if (status != HttpStatus.SC_OK)
+		try
 		{
-			throw new BrowsertrixApiException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			// Construct and execute the query 
+			String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
+			String result = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId + BrowsertrixEndpoints.BROWSER_PROFILE_ENDPOINT + "/" + profileId, getConnectionSettingsProvider().getAccessToken());
+		
+			// Deserialize the response
+			Gson gson = new Gson();
+			BrowserProfile entity = gson.fromJson(result, BrowserProfile.class);
+			
+			// We're done!
+			return entity;
 		}
-		
-		// Deserialize the response
-		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		Gson gson = new Gson();
-		BrowserProfile entity = gson.fromJson(result, BrowserProfile.class);
-		
-		// We're done!
-		return entity;
+		catch (IOException | HttpRequestFailedException e)
+		{
+			throw new BrowsertrixApiException("Could not get profile: " + e.getMessage());
+		}
 	}
 	
 	

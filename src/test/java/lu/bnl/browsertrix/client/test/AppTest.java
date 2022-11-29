@@ -25,7 +25,7 @@ public class AppTest
 	{
 		try
 		{
-			testCrawlTemplates();
+			testFiltering();
 		}
 		catch (Exception e)
 		{

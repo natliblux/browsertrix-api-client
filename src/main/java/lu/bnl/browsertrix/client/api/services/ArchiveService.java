@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import lu.bnl.browsertrix.client.api.ConnectionSettingsProvider;
 import lu.bnl.browsertrix.client.api.constants.BrowsertrixEndpoints;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
+import lu.bnl.browsertrix.client.exceptions.HttpRequestFailedException;
 import lu.bnl.browsertrix.client.model.archive.Archive;
 import lu.bnl.browsertrix.client.model.archive.ArchiveListResponse;
 import lu.bnl.browsertrix.client.utils.HttpUtils;
@@ -29,44 +30,44 @@ public class ArchiveService extends BasicApiService
 
 	public ArchiveListResponse listArchives() throws IOException, BrowsertrixApiException
 	{
-		// Construct and execute the query
-		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
-		HttpResponse response = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT, getConnectionSettingsProvider().getAccessToken());
-	
-		int status = response.getStatusLine().getStatusCode();
-		if (status != HttpStatus.SC_OK)
+		try
 		{
-			throw new BrowsertrixApiException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			// Construct and execute the query
+			String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
+			String result = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT, getConnectionSettingsProvider().getAccessToken());
+		
+			// Deserialize the response
+			Gson gson = new Gson();
+			ArchiveListResponse entity = gson.fromJson(result, ArchiveListResponse.class);
+			
+			// We're done!
+			return entity;
 		}
-		
-		// Deserialize the response
-		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		Gson gson = new Gson();
-		ArchiveListResponse entity = gson.fromJson(result, ArchiveListResponse.class);
-		
-		// We're done!
-		return entity;
+		catch (IOException | HttpRequestFailedException e)
+		{
+			throw new BrowsertrixApiException("Could not list archives: " + e.getMessage());
+		}
 	}
 	
 	public Archive getArchiveById(String archiveId) throws IOException, BrowsertrixApiException
 	{
-		// Construct and execute the query
-		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
-		HttpResponse response = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId, getConnectionSettingsProvider().getAccessToken());
-	
-		int status = response.getStatusLine().getStatusCode();
-		if (status != HttpStatus.SC_OK)
+		try
 		{
-			throw new BrowsertrixApiException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			// Construct and execute the query
+			String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
+			String result = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.ARCHIVE_ENDPOINT + "/" + archiveId, getConnectionSettingsProvider().getAccessToken());
+			
+			// Deserialize the response
+			Gson gson = new Gson();
+			Archive entity = gson.fromJson(result, Archive.class);
+			
+			// We're done!
+			return entity;
 		}
-		
-		// Deserialize the response
-		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		Gson gson = new Gson();
-		Archive entity = gson.fromJson(result, Archive.class);
-		
-		// We're done!
-		return entity;
+		catch (IOException | HttpRequestFailedException e)
+		{
+			throw new BrowsertrixApiException("Could not get archive: " + e.getMessage());
+		}
 	}
 	
 }

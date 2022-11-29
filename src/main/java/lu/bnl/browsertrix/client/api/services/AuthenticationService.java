@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import lu.bnl.browsertrix.client.api.ConnectionSettingsProvider;
 import lu.bnl.browsertrix.client.api.constants.BrowsertrixEndpoints;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
+import lu.bnl.browsertrix.client.exceptions.HttpRequestFailedException;
 import lu.bnl.browsertrix.client.model.authentication.AuthenticationResponse;
 import lu.bnl.browsertrix.client.model.authentication.UserInformationResponse;
 import lu.bnl.browsertrix.client.utils.HttpUtils;
@@ -37,11 +38,18 @@ public class AuthenticationService extends BasicApiService
 	 */
 	public boolean isAuthenticated() throws IOException
 	{
-		// Try to get self-identification information from the server
-		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
-		HttpResponse response = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.SELF_ENDPOINT, getConnectionSettingsProvider().getAccessToken());
-	
-		return (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
+		try
+		{
+			// Try to get self-identification information from the server
+			String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
+			HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.SELF_ENDPOINT, getConnectionSettingsProvider().getAccessToken());
+		
+			return true;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
 	}
 	
 	/**
@@ -50,30 +58,29 @@ public class AuthenticationService extends BasicApiService
 	 */
 	public AuthenticationResponse login() throws BrowsertrixApiException, IOException
 	{
-		// Set up the Browsertrix login payload
-		List<NameValuePair> payload = new ArrayList<NameValuePair>();
-		payload.add(new BasicNameValuePair("grant_type", "password"));
-		payload.add(new BasicNameValuePair("username", getConnectionSettingsProvider().getUsername()));
-		payload.add(new BasicNameValuePair("password", getConnectionSettingsProvider().getPassword()));
-		
-		// Execute the request
-		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
-		HttpResponse response = HttpUtils.executePostRequest(urlPrefix + BrowsertrixEndpoints.AUTH_ENDPOINT, payload);
-
-		// Check status
-		int status = response.getStatusLine().getStatusCode();
-		if (status != HttpStatus.SC_OK)
+		try
 		{
-			throw new BrowsertrixApiException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			// Set up the Browsertrix login payload
+			List<NameValuePair> payload = new ArrayList<NameValuePair>();
+			payload.add(new BasicNameValuePair("grant_type", "password"));
+			payload.add(new BasicNameValuePair("username", getConnectionSettingsProvider().getUsername()));
+			payload.add(new BasicNameValuePair("password", getConnectionSettingsProvider().getPassword()));
+			
+			// Execute the request
+			String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
+			String result = HttpUtils.executePostRequest(urlPrefix + BrowsertrixEndpoints.AUTH_ENDPOINT, payload);
+			
+			// Deserialize the response
+			Gson gson = new Gson();
+			AuthenticationResponse authResponse = gson.fromJson(result, AuthenticationResponse.class);
+			
+			// We're done!
+			return authResponse;
 		}
-		
-		// Deserialize the response
-		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		Gson gson = new Gson();
-		AuthenticationResponse authResponse = gson.fromJson(result, AuthenticationResponse.class);
-		
-		// We're done!
-		return authResponse;
+		catch (IOException | HttpRequestFailedException e)
+		{
+			throw new BrowsertrixApiException("Could not log in: " + e.getMessage());
+		}
 	}
 	
 	/**
@@ -81,23 +88,23 @@ public class AuthenticationService extends BasicApiService
 	 */
 	public UserInformationResponse getCurrentUser() throws IOException, BrowsertrixApiException
 	{
-		// Try to get self-identification information from the server
-		String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
-		HttpResponse response = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.SELF_ENDPOINT, getConnectionSettingsProvider().getAccessToken());
-	
-		int status = response.getStatusLine().getStatusCode();
-		if (status != HttpStatus.SC_OK)
+		try
 		{
-			throw new BrowsertrixApiException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			// Try to get self-identification information from the server
+			String urlPrefix = "http://" + getConnectionSettingsProvider().getUrl() + ":" + getConnectionSettingsProvider().getPort();
+			String result = HttpUtils.executeAuthenticatedGetRequest(urlPrefix + BrowsertrixEndpoints.SELF_ENDPOINT, getConnectionSettingsProvider().getAccessToken());
+		
+			// Deserialize it
+			Gson gson = new Gson();
+			UserInformationResponse user = gson.fromJson(result, UserInformationResponse.class);
+			
+			// We're done!
+			return user;
 		}
-		
-		// Deserialize the response
-		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		Gson gson = new Gson();
-		UserInformationResponse user = gson.fromJson(result, UserInformationResponse.class);
-		
-		// We're done!
-		return user;
+		catch (IOException | HttpRequestFailedException e)
+		{
+			throw new BrowsertrixApiException("Could not get current user: " + e.getMessage());
+		}
 	}
 	
 }

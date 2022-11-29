@@ -1,10 +1,13 @@
 package lu.bnl.browsertrix.client.utils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -14,6 +17,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 
 import lu.bnl.browsertrix.client.api.request.AccessToken;
+import lu.bnl.browsertrix.client.exceptions.HttpRequestFailedException;
 
 /**
  * Provides basic GET/POST request functionality with authentication.
@@ -22,7 +26,7 @@ import lu.bnl.browsertrix.client.api.request.AccessToken;
 public class HttpUtils 
 {
 
-	public static HttpResponse executeAuthenticatedGetRequest(String fullUrl, AccessToken accessToken) throws IOException
+	public static String executeAuthenticatedGetRequest(String fullUrl, AccessToken accessToken) throws IOException, HttpRequestFailedException
 	{
 		// Construct the request
 		CloseableHttpClient client = HttpClients.custom().build();
@@ -36,13 +40,22 @@ public class HttpUtils
 		// Do it!
 		HttpResponse response = client.execute(get);
 		
+		// Check status
+		int status = response.getStatusLine().getStatusCode();
+		if (status != HttpStatus.SC_OK)
+		{
+			throw new HttpRequestFailedException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+		}
+		
+		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+		
 		// Close the stream gracefully
 		client.close();
 		
-		return response;
+		return result;
 	}
 	
-	public static HttpResponse executePostRequest(String fullUrl, List<NameValuePair> payload, AccessToken accessToken) throws IOException
+	public static String executePostRequest(String fullUrl, List<NameValuePair> payload, AccessToken accessToken) throws IOException, HttpRequestFailedException
 	{
 		// Construct the request
 		CloseableHttpClient client = HttpClients.custom().build();
@@ -67,13 +80,22 @@ public class HttpUtils
 		// Do it!
 		HttpResponse response = client.execute(post);
 		
+		// Check status
+		int status = response.getStatusLine().getStatusCode();
+		if (status != HttpStatus.SC_OK)
+		{
+			throw new HttpRequestFailedException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+		}
+		
+		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+		
 		// Close the stream gracefully
 		client.close();
 		
-		return response;
+		return result;
 	}
 
-	public static HttpResponse executePostRequest(String fullUrl, List<NameValuePair> payload) throws IOException
+	public static String executePostRequest(String fullUrl, List<NameValuePair> payload) throws IOException, HttpRequestFailedException
 	{
 		return executePostRequest(fullUrl, payload, null);
 	}
