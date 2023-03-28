@@ -32,27 +32,32 @@ public class HttpUtils
 		CloseableHttpClient client = HttpClients.custom().build();
 		HttpGet get = new HttpGet(fullUrl);
 
-		// Insert the headers
-		Header headers[] = { new BasicHeader("Accept", "application/json"), 
-				             new BasicHeader("Authorization", getAuthHeaderFromAccessToken(accessToken))};
-		get.setHeaders(headers);
-		
-		// Do it!
-		HttpResponse response = client.execute(get);
-		
-		// Check status
-		int status = response.getStatusLine().getStatusCode();
-		if (status != HttpStatus.SC_OK)
+		try
 		{
-			throw new HttpRequestFailedException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			// Insert the headers
+			Header headers[] = { new BasicHeader("Accept", "application/json"), 
+					             new BasicHeader("Authorization", getAuthHeaderFromAccessToken(accessToken))};
+			get.setHeaders(headers);
+			
+			// Do it!
+			HttpResponse response = client.execute(get);
+			
+			// Check status
+			int status = response.getStatusLine().getStatusCode();
+			if (status != HttpStatus.SC_OK)
+			{
+				throw new HttpRequestFailedException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			}
+			
+			// Done
+			String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+			return result;
 		}
-		
-		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		
-		// Close the stream gracefully
-		client.close();
-		
-		return result;
+		finally
+		{
+			// Close the stream gracefully
+			client.close();
+		}
 	}
 	
 	public static String executePostRequest(String fullUrl, List<NameValuePair> payload, AccessToken accessToken) throws IOException, HttpRequestFailedException
@@ -61,38 +66,43 @@ public class HttpUtils
 		CloseableHttpClient client = HttpClients.custom().build();
 		HttpPost post = new HttpPost(fullUrl);
 
-		// Insert the headers
-		Header headers[] = { new BasicHeader("Accept", "application/json") };
-		post.setHeaders(headers);
-		
-		if (accessToken != null)
+		try
 		{
-			Header header = new BasicHeader("Authorization", getAuthHeaderFromAccessToken(accessToken));
-			post.addHeader(header);
+			// Insert the headers
+			Header headers[] = { new BasicHeader("Accept", "application/json") };
+			post.setHeaders(headers);
+			
+			if (accessToken != null)
+			{
+				Header header = new BasicHeader("Authorization", getAuthHeaderFromAccessToken(accessToken));
+				post.addHeader(header);
+			}
+			
+			// Create the payload
+			if (payload != null && !payload.isEmpty())
+			{
+				post.setEntity(new UrlEncodedFormEntity(payload, "UTF-8"));
+			}
+			
+			// Do it!
+			HttpResponse response = client.execute(post);
+			
+			// Check status
+			int status = response.getStatusLine().getStatusCode();
+			if (status != HttpStatus.SC_OK)
+			{
+				throw new HttpRequestFailedException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+			}
+			
+			// Done
+			String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+			return result;
 		}
-		
-		// Create the payload
-		if (payload != null && !payload.isEmpty())
+		finally
 		{
-			post.setEntity(new UrlEncodedFormEntity(payload, "UTF-8"));
+			// Close the stream gracefully
+			client.close();
 		}
-		
-		// Do it!
-		HttpResponse response = client.execute(post);
-		
-		// Check status
-		int status = response.getStatusLine().getStatusCode();
-		if (status != HttpStatus.SC_OK)
-		{
-			throw new HttpRequestFailedException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
-		}
-		
-		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		
-		// Close the stream gracefully
-		client.close();
-		
-		return result;
 	}
 
 	public static String executePostRequest(String fullUrl, List<NameValuePair> payload) throws IOException, HttpRequestFailedException
