@@ -1,11 +1,6 @@
 package lu.bnl.browsertrix.client.api.services;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 
 import com.google.gson.Gson;
 
