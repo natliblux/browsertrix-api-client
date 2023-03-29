@@ -31,33 +31,25 @@ public class HttpUtils
 		// Construct the request
 		CloseableHttpClient client = HttpClients.custom().build();
 		HttpGet get = new HttpGet(fullUrl);
-
-		try
+			
+		// Insert the headers
+		Header headers[] = { new BasicHeader("Accept", "application/json"), 
+				             new BasicHeader("Authorization", getAuthHeaderFromAccessToken(accessToken))};
+		get.setHeaders(headers);
+		
+		// Do it!
+		HttpResponse response = client.execute(get);
+		
+		// Check status
+		int status = response.getStatusLine().getStatusCode();
+		if (status != HttpStatus.SC_OK)
 		{
-			// Insert the headers
-			Header headers[] = { new BasicHeader("Accept", "application/json"), 
-					             new BasicHeader("Authorization", getAuthHeaderFromAccessToken(accessToken))};
-			get.setHeaders(headers);
-			
-			// Do it!
-			HttpResponse response = client.execute(get);
-			
-			// Check status
-			int status = response.getStatusLine().getStatusCode();
-			if (status != HttpStatus.SC_OK)
-			{
-				throw new HttpRequestFailedException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
-			}
-			
-			// Done
-			String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			return result;
+			throw new HttpRequestFailedException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
 		}
-		finally
-		{
-			// Close the stream gracefully
-			client.close();
-		}
+		
+		// Done
+		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+		return result;
 	}
 	
 	public static String executePostRequest(String fullUrl, List<NameValuePair> payload, AccessToken accessToken) throws IOException, HttpRequestFailedException
@@ -66,43 +58,35 @@ public class HttpUtils
 		CloseableHttpClient client = HttpClients.custom().build();
 		HttpPost post = new HttpPost(fullUrl);
 
-		try
+		// Insert the headers
+		Header headers[] = { new BasicHeader("Accept", "application/json") };
+		post.setHeaders(headers);
+		
+		if (accessToken != null)
 		{
-			// Insert the headers
-			Header headers[] = { new BasicHeader("Accept", "application/json") };
-			post.setHeaders(headers);
-			
-			if (accessToken != null)
-			{
-				Header header = new BasicHeader("Authorization", getAuthHeaderFromAccessToken(accessToken));
-				post.addHeader(header);
-			}
-			
-			// Create the payload
-			if (payload != null && !payload.isEmpty())
-			{
-				post.setEntity(new UrlEncodedFormEntity(payload, "UTF-8"));
-			}
-			
-			// Do it!
-			HttpResponse response = client.execute(post);
-			
-			// Check status
-			int status = response.getStatusLine().getStatusCode();
-			if (status != HttpStatus.SC_OK)
-			{
-				throw new HttpRequestFailedException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
-			}
-			
-			// Done
-			String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			return result;
+			Header header = new BasicHeader("Authorization", getAuthHeaderFromAccessToken(accessToken));
+			post.addHeader(header);
 		}
-		finally
+		
+		// Create the payload
+		if (payload != null && !payload.isEmpty())
 		{
-			// Close the stream gracefully
-			client.close();
+			post.setEntity(new UrlEncodedFormEntity(payload, "UTF-8"));
 		}
+		
+		// Do it!
+		HttpResponse response = client.execute(post);
+		
+		// Check status
+		int status = response.getStatusLine().getStatusCode();
+		if (status != HttpStatus.SC_OK)
+		{
+			throw new HttpRequestFailedException("Server returned status code " + status + " with message '" + response.getStatusLine().getReasonPhrase() + "'");
+		}
+		
+		// Done
+		String result = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+		return result;
 	}
 
 	public static String executePostRequest(String fullUrl, List<NameValuePair> payload) throws IOException, HttpRequestFailedException
