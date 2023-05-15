@@ -1,5 +1,7 @@
 ## Introduction
 
+**Note** The current version of this client is outdated and will only work with the December 2022 (or earlier) versions of Browsertrix Cloud. An update is on its way and will be deployed shortly.
+
 `browsertrix-api-client` is a Java API client for [Browsertrix Cloud](https://github.com/webrecorder/browsertrix-cloud). The client supports authentication and provides an easy way to access its various services and endpoints.
 
 ## Usage
