@@ -1,6 +1,8 @@
 ## Note
 
-**Added 15/05/2023** The current version of this client is outdated and will only work with the December 2022 (or earlier) versions of Browsertrix Cloud. An update is on its way and will be deployed shortly.
+**15/05/2023** The current version of this client is outdated and some features will only work with the December 2022 (or earlier) versions of Browsertrix Cloud. An update is on its way and will be deployed shortly.
+
+Note that most functionalities might still be usable with the current version, but others (such as Archives) will not.
 
 ## Introduction
 
