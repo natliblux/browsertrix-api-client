@@ -8,7 +8,9 @@ import lu.bnl.browsertrix.client.BrowsertrixClient;
 import lu.bnl.browsertrix.client.api.filter.CrawlConfigFilter;
 import lu.bnl.browsertrix.client.api.filter.CrawlFilter;
 import lu.bnl.browsertrix.client.exceptions.BrowsertrixApiException;
+import lu.bnl.browsertrix.client.model.archive.Archive;
 import lu.bnl.browsertrix.client.model.archive.ArchiveListResponse;
+import lu.bnl.browsertrix.client.model.crawl.Crawl;
 import lu.bnl.browsertrix.client.model.crawl.CrawlConfig;
 import lu.bnl.browsertrix.client.model.crawl.CrawlState;
 
@@ -25,12 +27,43 @@ public class AppTest
 	{
 		try
 		{
-			testFiltering();
+			testStatisticsFiltering();
 		}
 		catch (Exception e)
 		{
 			System.out.println("Test FAILED: " + e.getMessage());
 			e.printStackTrace();
+		}
+	}
+	
+	private static void testStatisticsFiltering() throws BrowsertrixApiException, IOException
+	{
+		BrowsertrixClient client = new BrowsertrixClient(URL, PORT, USERNAME, PASSWORD);
+		client.connect();
+		
+		ArchiveListResponse response = client.getArchiveService().listArchives();
+		
+		for (Archive archive : response.getArchives())
+		{
+		
+			CrawlFilter filter = new CrawlFilter();
+			List<CrawlState> states = new ArrayList<CrawlState>();
+			states.add(CrawlState.PARTIAL_COMPLETE);
+			states.add(CrawlState.COMPLETE);
+			states.add(CrawlState.FAILED);
+			states.add(CrawlState.CANCELED);
+			
+			filter.setCrawlStates(states);
+			
+			filter.setFinishedAfter(Instant.now().getEpochSecond() - (24 * 60 * 60));
+			
+			// Get the filtered result list
+			List<Crawl> crawls = client.getCrawlService().listCrawlsByArchiveId(archive.getId(), filter).getCrawls();
+			
+			for (Crawl crawl : crawls)
+			{
+				System.out.println("[" + archive.getId() + "] found crawl: '" + crawl.getName() + "'");
+			}
 		}
 	}
 	
@@ -48,6 +81,7 @@ public class AppTest
 		List<CrawlState> states = new ArrayList<CrawlState>();
 		states.add(CrawlState.PARTIAL_COMPLETE);
 		states.add(CrawlState.COMPLETE);
+		states.add(CrawlState.FAILED);
 		
 		filter.setCrawlStates(states);
 		filter.setFinishedAfter(Instant.now().getEpochSecond() - 240*60*60); // in seconds
